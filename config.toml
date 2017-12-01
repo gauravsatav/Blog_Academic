@@ -139,7 +139,7 @@ defaultContentLanguageInSubdir = false
   # highlight_style = "github"
 
   # Enable native social sharing buttons?
-  sharing = true
+  sharing = false
 
   # Link custom CSS and JS assets
   #   (relative to /static/css and /static/js respectively)
@@ -258,7 +258,6 @@ defaultContentLanguageInSubdir = false
   name = "Contact"
   url = "#contact"
   weight = 4
-
 
 # Taxonomies.
 [taxonomies]
