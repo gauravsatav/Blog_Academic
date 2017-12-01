@@ -1,4 +1,4 @@
-baseurl = "https://onetwo.netlify.com/"  # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
+baseurl = "http://www.g29s.com/"  # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
 title = "GAURAV SATAV"
 relativeurls=true
 copyright = "&copy; 2017 GAURAV SATAV"
@@ -105,7 +105,7 @@ defaultContentLanguageInSubdir = false
 
   # Enable global LaTeX math rendering?
   #   If false, you can enable it locally on a per page basis.
-  math = false
+  math = true
 
   # Highlight.js options
   #   highlight

@@ -15,7 +15,7 @@ output:
 ---
 
 
-## Welcome !
+## WELCOME !
 This is my first swing at using the `flexdashboard` package in R to create a dashboard. The dashboard show us a `storyboard` templet and uses elements from the `highcharter` package to create the various plots along with the packages `kable` and `kableExtra` to format the tables.
 
 - The dashboard itself can be viewed by clicking the link [here](https://gauravsatav.github.io/NetworkDashboard/)

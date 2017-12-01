@@ -18,7 +18,7 @@
       <guid>/post/flexdashboard_uc1/</guid>
       <description>&lt;div id=&#34;TOC&#34;&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#welcome&#34;&gt;Welcome !&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#welcome&#34;&gt;WELCOME !&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#read-data&#34;&gt;READ DATA&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#create-main-dashboard&#34;&gt;CREATE MAIN DASHBOARD&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;#account-summary&#34;&gt;ACCOUNT SUMMARY&lt;/a&gt;&lt;/li&gt;
@@ -28,7 +28,7 @@
 &lt;/div&gt;
 
 &lt;div id=&#34;welcome&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Welcome !&lt;/h2&gt;
+&lt;h2&gt;WELCOME !&lt;/h2&gt;
 &lt;p&gt;This is my first swing at using the &lt;code&gt;flexdashboard&lt;/code&gt; package in R to create a dashboard. The dashboard show us a &lt;code&gt;storyboard&lt;/code&gt; templet and uses elements from the &lt;code&gt;highcharter&lt;/code&gt; package to create the various plots along with the packages &lt;code&gt;kable&lt;/code&gt; and &lt;code&gt;kableExtra&lt;/code&gt; to format the tables.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The dashboard itself can be viewed by clicking the link &lt;a href=&#34;https://gauravsatav.github.io/NetworkDashboard/&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
