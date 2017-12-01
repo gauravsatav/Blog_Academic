@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.31" />
+  <meta name="author" content="Gaurav Satav">
+  <meta name="description" content="Data Scientist">
+
+  
+  <link rel="alternate" hreflang="en-us" href="../../post/flexdashboard_uc1/">
+
+  
+  
+
+
+  
+
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Playfair&#43;Display:400,700%7cFauna&#43;One">
+  
+  <link rel="stylesheet" href="../../styles.css">
+  
+
+  
+
+  
+  <link rel="alternate" href="../../index.xml" type="application/rss+xml" title="GAURAV SATAV">
+  <link rel="feed" href="../../index.xml" type="application/rss+xml" title="GAURAV SATAV">
+  
+
+  <link rel="manifest" href="../../site.webmanifest">
+  <link rel="icon" type="image/png" href="../../img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="../../img/icon-192.png">
+
+  <link rel="canonical" href="../../post/flexdashboard_uc1/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="GAURAV SATAV">
+  <meta property="og:url" content="/post/flexdashboard_uc1/">
+  <meta property="og:title" content="Connectivity Representation using Flexdashboard library | GAURAV SATAV">
+  <meta property="og:description" content="">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2017-12-01T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2017-12-01T00:00:00&#43;00:00">
+  
+
+  
+
+  <title>Connectivity Representation using Flexdashboard library | GAURAV SATAV</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="../../">GAURAV SATAV</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="../../#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="../../#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="../../#about">
+            
+            <span>About</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="../../#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Connectivity Representation using Flexdashboard library</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+    <time datetime="2017-12-01 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Dec 1, 2017
+    </time>
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    4 min read
+  </span>
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <a href="../../post/flexdashboard_uc1/#disqus_thread"></a>
+  
+
+  
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fa fa-folder"></i>
+    
+    <a href="../../categories/r">R</a
+    >, 
+    
+    <a href="../../categories/markdown">markdown</a
+    >, 
+    
+    <a href="../../categories/visualization">visualization</a
+    >
+    
+  </span>
+  
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Connectivity%20Representation%20using%20Flexdashboard%20library&amp;url=%2fpost%2fflexdashboard_uc1%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2fflexdashboard_uc1%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2fflexdashboard_uc1%2f&amp;title=Connectivity%20Representation%20using%20Flexdashboard%20library"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2fflexdashboard_uc1%2f&amp;title=Connectivity%20Representation%20using%20Flexdashboard%20library"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Connectivity%20Representation%20using%20Flexdashboard%20library&amp;body=%2fpost%2fflexdashboard_uc1%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        <div id="TOC">
+<ul>
+<li><a href="#welcome">Welcome !</a></li>
+<li><a href="#read-data">READ DATA</a></li>
+<li><a href="#create-main-dashboard">CREATE MAIN DASHBOARD</a></li>
+<li><a href="#account-summary">ACCOUNT SUMMARY</a></li>
+<li><a href="#failed-servers-of-current-week">FAILED SERVERS OF CURRENT WEEK</a></li>
+<li><a href="#current-weeks-status-of-all-servers">CURRENT WEEKS STATUS OF ALL SERVERS</a></li>
+</ul>
+</div>
+
+<div id="welcome" class="section level2">
+<h2>Welcome !</h2>
+<p>This is my first swing at using the <code>flexdashboard</code> package in R to create a dashboard. The dashboard show us a <code>storyboard</code> templet and uses elements from the <code>highcharter</code> package to create the various plots along with the packages <code>kable</code> and <code>kableExtra</code> to format the tables.</p>
+<ul>
+<li>The dashboard itself can be viewed by clicking the link <a href="https://gauravsatav.github.io/NetworkDashboard/">here</a></li>
+<li>The github repository which includes the datafiles (along with the code) can be found <a href="https://github.com/gauravsatav/NetworkDashboard">here</a></li>
+</ul>
+<p>We’ll start off by first including the required library</p>
+<pre class="r"><code>library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+library(highcharter)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+library(reshape2)
+library(RCurl)</code></pre>
+</div>
+<div id="read-data" class="section level2">
+<h2>READ DATA</h2>
+<ul>
+<li>Read Current Connectivity Status Data into the “ConnectivityData” dataframe and convert the “Date” column into a date object in R.</li>
+<li>In our case the Connectivity data for different clients is situated in the <code>./Data/November/47/</code> directory. Different Clients have different datafiles and the <code>47</code> here represents the 47th Week of the year.</li>
+<li>There is also another dictory which contains the connectivity data for all the previous weeks (for all files) into a single file called <code>AllData.csv</code></li>
+</ul>
+<pre class="r"><code>filename &lt;- &quot;../Data/November/47/client1.csv&quot;
+path &lt;- dirname(filename)
+files &lt;- list.files(paste(path,&quot;/&quot;,sep = &quot;&quot;))
+files &lt;- paste(path,files,sep = &quot;/&quot;)
+ConnectivityData &lt;- lapply(files,read.csv,header=TRUE)
+ConnectivityData &lt;- do.call(rbind,ConnectivityData)
+ConnectivityData$Date &lt;- mdy_hms(ConnectivityData$Date)
+ConnectivityData$Date &lt;- date(ConnectivityData$Date))
+
+# =====Read the past Connectivity Status Data and perform the same actions, Also bind the current weeks data to it.=====
+AllData &lt;- read.csv(&quot;../Data/All/All.csv&quot;)
+AllData &lt;- AllData[,2:length(colnames(AllData))]
+AllData$Date &lt;- date(AllData$Date)
+
+AllData &lt;- rbind(AllData,ConnectivityData)</code></pre>
+<pre class="r"><code># =====Get List of Servers Currently Failing.=====
+      CurrentFailedServerList &lt;- as.character(ConnectivityData[grep(&quot;fail&quot;,as.character(ConnectivityData$Sudo),ignore.case = TRUE),&quot;Affected_Host&quot;])
+
+# =====Extract Week for the Data.=====
+      AllData$Week &lt;- week(AllData$Date)
+
+# =====Adding the &quot;Account&quot; Variable to the variable FailedServerAnalysis.Just Excluding Jumpboxes and Node2s from the Analysis as they Skew the accounts to which they belong by changinig the &quot;Account&quot; for them in the Current Weeks Data as &quot;Node1 or Node2&quot; and in variable FailedServerDetails &quot;Type&quot; to &quot;Node1 or Node2&quot;=====
+    # Define the Special Servers.  
+      SpecialServers &lt;- data.frame(ServerIP = c(&quot;127.0.0.1&quot;,&quot;127.18.125.25&quot;,&quot;111.24.8.64&quot;,&quot;111.24.8.63&quot;,&quot;111.12.1.121&quot;,&quot;111.12.2.12&quot;),Type = c(&quot;Node1&quot;,&quot;Node1&quot;,&quot;Node2&quot;,&quot;Node2&quot;,&quot;Other&quot;,&quot;Other&quot;),stringsAsFactors = FALSE)
+        
+        ConnectivityData$Account&lt;-as.character(ConnectivityData$Account)
+        AllData$Account&lt;-as.character(AllData$Account)
+        
+        AllData[AllData$Affected_Host %in% SpecialServers$ServerIP,&quot;Account&quot;] &lt;- &quot;Node1 or Node2&quot;
+        ConnectivityData[ConnectivityData$Affected_Host %in% SpecialServers$ServerIP,&quot;Account&quot;] &lt;- &quot;Node1 or Node2&quot;
+        
+        ConnectivityData$Account&lt;-as.factor(ConnectivityData$Account)
+        AllData$Account&lt;-as.factor(AllData$Account)
+        
+        ConnectivityData &lt;- ConnectivityData %&gt;% filter(Account!=&quot;Node1 or Node2&quot;)
+        AllData &lt;- AllData %&gt;% filter(Account!=&quot;Node1 or Node2&quot;)
+
+# =====Create a DataFrame to Analyse Faliures for all Week (basically to Analyse the Complete Servers). Find the Failed Servers in the AllData and create a new column &#39;Week&#39; which contains the weeks seperated by &quot;,&quot; on which the particular server had failed.=====
+      FailedServerDetails &lt;- data.frame(as.matrix(aggregate(Week~Affected_Host,data = AllData[AllData$Sudo==&#39;Failed&#39;,],FUN=function(myweek){paste(myweek,collapse = &quot;,&quot;)})),stringsAsFactors = FALSE)
+
+        FailedServerDetails$Type &lt;- &quot;Endpoints&quot;
+        FailedServerDetails[FailedServerDetails$Affected_Host %in% SpecialServers$ServerIP,&quot;Type&quot;] &lt;- &quot;Node1 or Node2&quot;
+        FailedServerDetails[FailedServerDetails$Affected_Host %in% SpecialServers$ServerIP,&quot;Type&quot;] &lt;- &quot;Node1 or Node2&quot;
+
+        AllData$Affected_Host &lt;- as.character(AllData$Affected_Host)
+        i &lt;- 1
+        for(server in FailedServerDetails$Affected_Host){
+        if(server %in% SpecialServers$ServerIP){
+          FailedServerDetails$Account[i] &lt;- &quot;Node1 or Node2&quot;
+          i &lt;- i+1
+        }  
+          else {
+        FailedServerDetails$Account[i] &lt;- as.character(unique(AllData[grep(server,AllData$Affected_Host),&quot;Account&quot;]))
+        i&lt;-i+1
+        }
+        }
+        AllData$Affected_Host &lt;- as.factor(AllData$Affected_Host)
+
+
+
+# =====Set Current Week and the Starting Week from which the Analysis will be starting. Also Setting the defalut streak for failed servers as 1=====
+      CurrentWeek &lt;- week(ConnectivityData$Date[1])
+      StartingWeek &lt;-week(AllData$Date[1])
+      FailedServerDetails$Streak &lt;- 1
+      TempWeek &lt;- CurrentWeek
+
+
+# =====Create a df &quot;StreakServers&quot; which will help in analysis of server&#39;s streak information by parsing the &quot;Week&quot; column of the FailedServerDetail and adding 1 to the default Streak of 1 to the failed Server.=====
+      StreakServers &lt;- FailedServerDetails
+      while(TempWeek &gt; StartingWeek){
+        StreakServers &lt;- StreakServers[grep(as.character(TempWeek-1),StreakServers$Week),]
+        StreakServers$Streak &lt;- StreakServers$Streak+1
+        FailedServerDetails[FailedServerDetails$Affected_Host %in% StreakServers$Affected_Host,&quot;Streak&quot;] &lt;-FailedServerDetails[FailedServerDetails$Affected_Host %in% StreakServers$Affected_Host,&quot;Streak&quot;]+1
+        TempWeek &lt;- TempWeek - 1
+      }
+      FailedServerDetails[grep(CurrentWeek,FailedServerDetails$Week,invert = TRUE),&quot;Streak&quot;] &lt;- 0
+
+
+# =====Finding the total times a server has Failed.=====
+      FailedServerDetails$Total &lt;- 1
+      for(i in 1:length(FailedServerDetails$Affected_Host)){
+        FailedServerDetails$Total[i] &lt;- length(strsplit(FailedServerDetails$Week[i],split=&quot;,&quot;)[[1]])
+      }
+      FailedServerDetails &lt;- FailedServerDetails[order(-FailedServerDetails$Streak),]
+
+
+# =====Extracting a df from the &quot;FailedServerDetails&quot; containing details only of Servers which have failed for the current week.=====
+      CurrentWeekFailedServerDetails &lt;- FailedServerDetails %&gt;% filter(Affected_Host %in% CurrentFailedServerList)
+      CurrentWeekFailedServerDetails &lt;- CurrentWeekFailedServerDetails[order(-CurrentWeekFailedServerDetails$Total),]
+      CurrentWeekFailedServerDetails &lt;- CurrentWeekFailedServerDetails[order(-CurrentWeekFailedServerDetails$Streak),]
+      
+# ====Finding the Point of Faliure.=====
+      CurrentWeekFailedServerDetails$PointOfFaliure &lt;- &quot;&quot;
+      i&lt;-1
+      for(server in CurrentWeekFailedServerDetails$Affected_Host){
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&quot;Sudo&quot;]==&quot;Failed&quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &lt;- &quot;Sudo&quot;
+        }
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&quot;Authentication&quot;]==&quot;Failed&quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &lt;- &quot;Authentication&quot;
+        }
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&quot;SSH_to_endpoint&quot;]==&quot;Failed&quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &lt;- &quot;SSH&quot;
+        }
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&quot;Port_Check_Status&quot;]==&quot;Failed&quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &lt;- &quot;PortCheck&quot;
+        }
+        
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&quot;Node1_Status&quot;]==&quot;Failed&quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &lt;- &quot;Node1&quot;
+        }
+        i&lt;-i+1
+      }</code></pre>
+</div>
+<div id="create-main-dashboard" class="section level2">
+<h2>CREATE MAIN DASHBOARD</h2>
+<pre class="r"><code># ===== Count the number of servers which have failed. Also Create a new column which says how many servers are on a streak since last week.=====
+      ConnectivityData &lt;- mutate(ConnectivityData,Status = ifelse(Sudo==&quot;Success&quot;,1,0))
+      ConnectivityData &lt;- mutate(ConnectivityData,CheckStatus=ifelse(Sudo==&quot;Success&quot;,0,1))
+      ConnectivityData$Streak &lt;- 0
+      ServersOnStreak &lt;- CurrentWeekFailedServerDetails %&gt;% filter(Streak &gt; 1) %&gt;% select(Affected_Host)
+      ConnectivityData &lt;- ConnectivityData %&gt;% mutate(Streak = ifelse(Affected_Host %in% ServersOnStreak$Affected_Host,1,0))
+
+
+# ===== Summarise the &quot;ConnectivityData&quot; df.=====
+      MainDashboard &lt;- ConnectivityData %&gt;% group_by(Account) %&gt;% summarise(Total = length(Affected_Host),Success = sum(Status),Failed = sum(CheckStatus),On.A.Streak = sum(Streak))
+
+
+# ===== Create the Graph =====      
+      melt(MainDashboard,&quot;Account&quot;) %&gt;% hchart(&quot;column&quot;,hcaes(x=&quot;Account&quot;,y=&quot;value&quot;,group=&quot;variable&quot;))</code></pre>
+</div>
+<div id="account-summary" class="section level2">
+<h2>ACCOUNT SUMMARY</h2>
+<pre class="r"><code>MainDashboard %&gt;% kable(&quot;html&quot;,escape=F) %&gt;% kable_styling(&quot;hover&quot;)%&gt;%scroll_box(height=&quot;500px&quot;)</code></pre>
+</div>
+<div id="failed-servers-of-current-week" class="section level2">
+<h2>FAILED SERVERS OF CURRENT WEEK</h2>
+<pre class="r"><code># ===== Dashboard for Details on Current Weeks Falilures =====
+      CurrentWeekFailedServerDetails %&gt;% mutate(Total = cell_spec(Total,&quot;html&quot;,color=ifelse(Total &gt; 1,&quot;red&quot;,&quot;black&quot;)))%&gt;% kable(&quot;html&quot;, escape = F) %&gt;% kable_styling(&quot;hover&quot;, full_width = F)%&gt;%scroll_box(height=&quot;500px&quot;)</code></pre>
+</div>
+<div id="current-weeks-status-of-all-servers" class="section level2">
+<h2>CURRENT WEEKS STATUS OF ALL SERVERS</h2>
+<pre class="r"><code># ===== Dashboard displaying details for all connectivity status for this week Successful as well as Failed.=====
+      ConnectivityData%&gt;%select(-c(Status,CheckStatus)) %&gt;% kable(&quot;html&quot;,escape = F) %&gt;% kable_styling(&quot;hover&quot;, full_width = F)%&gt;%scroll_box(height=&quot;500px&quot;)</code></pre>
+</div>
+
+      </div>
+
+      
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="../../tags/flexdashboard">flexdashboard</a>
+  
+</div>
+
+
+
+    </div>
+  </div>
+
+</article>
+
+
+
+
+
+
+<div class="article-container">
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "g29s" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2017 GAURAV SATAV &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+    <script id="dsq-count-scr" src="//g29s.disqus.com/count.js" async></script>
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    
+    
+    <script src="../../js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+
+  </body>
+</html>
+

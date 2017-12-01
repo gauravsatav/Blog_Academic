@@ -11,6 +11,196 @@
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Connectivity Representation using Flexdashboard library</title>
+      <link>/post/flexdashboard_uc1/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/flexdashboard_uc1/</guid>
+      <description>&lt;div id=&#34;TOC&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#welcome&#34;&gt;Welcome !&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#read-data&#34;&gt;READ DATA&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#create-main-dashboard&#34;&gt;CREATE MAIN DASHBOARD&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#account-summary&#34;&gt;ACCOUNT SUMMARY&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#failed-servers-of-current-week&#34;&gt;FAILED SERVERS OF CURRENT WEEK&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#current-weeks-status-of-all-servers&#34;&gt;CURRENT WEEKS STATUS OF ALL SERVERS&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;div id=&#34;welcome&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Welcome !&lt;/h2&gt;
+&lt;p&gt;This is my first swing at using the &lt;code&gt;flexdashboard&lt;/code&gt; package in R to create a dashboard. The dashboard show us a &lt;code&gt;storyboard&lt;/code&gt; templet and uses elements from the &lt;code&gt;highcharter&lt;/code&gt; package to create the various plots along with the packages &lt;code&gt;kable&lt;/code&gt; and &lt;code&gt;kableExtra&lt;/code&gt; to format the tables.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The dashboard itself can be viewed by clicking the link &lt;a href=&#34;https://gauravsatav.github.io/NetworkDashboard/&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The github repository which includes the datafiles (along with the code) can be found &lt;a href=&#34;https://github.com/gauravsatav/NetworkDashboard&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We’ll start off by first including the required library&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+library(highcharter)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+library(reshape2)
+library(RCurl)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;read-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;READ DATA&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Read Current Connectivity Status Data into the “ConnectivityData” dataframe and convert the “Date” column into a date object in R.&lt;/li&gt;
+&lt;li&gt;In our case the Connectivity data for different clients is situated in the &lt;code&gt;./Data/November/47/&lt;/code&gt; directory. Different Clients have different datafiles and the &lt;code&gt;47&lt;/code&gt; here represents the 47th Week of the year.&lt;/li&gt;
+&lt;li&gt;There is also another dictory which contains the connectivity data for all the previous weeks (for all files) into a single file called &lt;code&gt;AllData.csv&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;filename &amp;lt;- &amp;quot;../Data/November/47/client1.csv&amp;quot;
+path &amp;lt;- dirname(filename)
+files &amp;lt;- list.files(paste(path,&amp;quot;/&amp;quot;,sep = &amp;quot;&amp;quot;))
+files &amp;lt;- paste(path,files,sep = &amp;quot;/&amp;quot;)
+ConnectivityData &amp;lt;- lapply(files,read.csv,header=TRUE)
+ConnectivityData &amp;lt;- do.call(rbind,ConnectivityData)
+ConnectivityData$Date &amp;lt;- mdy_hms(ConnectivityData$Date)
+ConnectivityData$Date &amp;lt;- date(ConnectivityData$Date))
+
+# =====Read the past Connectivity Status Data and perform the same actions, Also bind the current weeks data to it.=====
+AllData &amp;lt;- read.csv(&amp;quot;../Data/All/All.csv&amp;quot;)
+AllData &amp;lt;- AllData[,2:length(colnames(AllData))]
+AllData$Date &amp;lt;- date(AllData$Date)
+
+AllData &amp;lt;- rbind(AllData,ConnectivityData)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# =====Get List of Servers Currently Failing.=====
+      CurrentFailedServerList &amp;lt;- as.character(ConnectivityData[grep(&amp;quot;fail&amp;quot;,as.character(ConnectivityData$Sudo),ignore.case = TRUE),&amp;quot;Affected_Host&amp;quot;])
+
+# =====Extract Week for the Data.=====
+      AllData$Week &amp;lt;- week(AllData$Date)
+
+# =====Adding the &amp;quot;Account&amp;quot; Variable to the variable FailedServerAnalysis.Just Excluding Jumpboxes and Node2s from the Analysis as they Skew the accounts to which they belong by changinig the &amp;quot;Account&amp;quot; for them in the Current Weeks Data as &amp;quot;Node1 or Node2&amp;quot; and in variable FailedServerDetails &amp;quot;Type&amp;quot; to &amp;quot;Node1 or Node2&amp;quot;=====
+    # Define the Special Servers.  
+      SpecialServers &amp;lt;- data.frame(ServerIP = c(&amp;quot;127.0.0.1&amp;quot;,&amp;quot;127.18.125.25&amp;quot;,&amp;quot;111.24.8.64&amp;quot;,&amp;quot;111.24.8.63&amp;quot;,&amp;quot;111.12.1.121&amp;quot;,&amp;quot;111.12.2.12&amp;quot;),Type = c(&amp;quot;Node1&amp;quot;,&amp;quot;Node1&amp;quot;,&amp;quot;Node2&amp;quot;,&amp;quot;Node2&amp;quot;,&amp;quot;Other&amp;quot;,&amp;quot;Other&amp;quot;),stringsAsFactors = FALSE)
+        
+        ConnectivityData$Account&amp;lt;-as.character(ConnectivityData$Account)
+        AllData$Account&amp;lt;-as.character(AllData$Account)
+        
+        AllData[AllData$Affected_Host %in% SpecialServers$ServerIP,&amp;quot;Account&amp;quot;] &amp;lt;- &amp;quot;Node1 or Node2&amp;quot;
+        ConnectivityData[ConnectivityData$Affected_Host %in% SpecialServers$ServerIP,&amp;quot;Account&amp;quot;] &amp;lt;- &amp;quot;Node1 or Node2&amp;quot;
+        
+        ConnectivityData$Account&amp;lt;-as.factor(ConnectivityData$Account)
+        AllData$Account&amp;lt;-as.factor(AllData$Account)
+        
+        ConnectivityData &amp;lt;- ConnectivityData %&amp;gt;% filter(Account!=&amp;quot;Node1 or Node2&amp;quot;)
+        AllData &amp;lt;- AllData %&amp;gt;% filter(Account!=&amp;quot;Node1 or Node2&amp;quot;)
+
+# =====Create a DataFrame to Analyse Faliures for all Week (basically to Analyse the Complete Servers). Find the Failed Servers in the AllData and create a new column &amp;#39;Week&amp;#39; which contains the weeks seperated by &amp;quot;,&amp;quot; on which the particular server had failed.=====
+      FailedServerDetails &amp;lt;- data.frame(as.matrix(aggregate(Week~Affected_Host,data = AllData[AllData$Sudo==&amp;#39;Failed&amp;#39;,],FUN=function(myweek){paste(myweek,collapse = &amp;quot;,&amp;quot;)})),stringsAsFactors = FALSE)
+
+        FailedServerDetails$Type &amp;lt;- &amp;quot;Endpoints&amp;quot;
+        FailedServerDetails[FailedServerDetails$Affected_Host %in% SpecialServers$ServerIP,&amp;quot;Type&amp;quot;] &amp;lt;- &amp;quot;Node1 or Node2&amp;quot;
+        FailedServerDetails[FailedServerDetails$Affected_Host %in% SpecialServers$ServerIP,&amp;quot;Type&amp;quot;] &amp;lt;- &amp;quot;Node1 or Node2&amp;quot;
+
+        AllData$Affected_Host &amp;lt;- as.character(AllData$Affected_Host)
+        i &amp;lt;- 1
+        for(server in FailedServerDetails$Affected_Host){
+        if(server %in% SpecialServers$ServerIP){
+          FailedServerDetails$Account[i] &amp;lt;- &amp;quot;Node1 or Node2&amp;quot;
+          i &amp;lt;- i+1
+        }  
+          else {
+        FailedServerDetails$Account[i] &amp;lt;- as.character(unique(AllData[grep(server,AllData$Affected_Host),&amp;quot;Account&amp;quot;]))
+        i&amp;lt;-i+1
+        }
+        }
+        AllData$Affected_Host &amp;lt;- as.factor(AllData$Affected_Host)
+
+
+
+# =====Set Current Week and the Starting Week from which the Analysis will be starting. Also Setting the defalut streak for failed servers as 1=====
+      CurrentWeek &amp;lt;- week(ConnectivityData$Date[1])
+      StartingWeek &amp;lt;-week(AllData$Date[1])
+      FailedServerDetails$Streak &amp;lt;- 1
+      TempWeek &amp;lt;- CurrentWeek
+
+
+# =====Create a df &amp;quot;StreakServers&amp;quot; which will help in analysis of server&amp;#39;s streak information by parsing the &amp;quot;Week&amp;quot; column of the FailedServerDetail and adding 1 to the default Streak of 1 to the failed Server.=====
+      StreakServers &amp;lt;- FailedServerDetails
+      while(TempWeek &amp;gt; StartingWeek){
+        StreakServers &amp;lt;- StreakServers[grep(as.character(TempWeek-1),StreakServers$Week),]
+        StreakServers$Streak &amp;lt;- StreakServers$Streak+1
+        FailedServerDetails[FailedServerDetails$Affected_Host %in% StreakServers$Affected_Host,&amp;quot;Streak&amp;quot;] &amp;lt;-FailedServerDetails[FailedServerDetails$Affected_Host %in% StreakServers$Affected_Host,&amp;quot;Streak&amp;quot;]+1
+        TempWeek &amp;lt;- TempWeek - 1
+      }
+      FailedServerDetails[grep(CurrentWeek,FailedServerDetails$Week,invert = TRUE),&amp;quot;Streak&amp;quot;] &amp;lt;- 0
+
+
+# =====Finding the total times a server has Failed.=====
+      FailedServerDetails$Total &amp;lt;- 1
+      for(i in 1:length(FailedServerDetails$Affected_Host)){
+        FailedServerDetails$Total[i] &amp;lt;- length(strsplit(FailedServerDetails$Week[i],split=&amp;quot;,&amp;quot;)[[1]])
+      }
+      FailedServerDetails &amp;lt;- FailedServerDetails[order(-FailedServerDetails$Streak),]
+
+
+# =====Extracting a df from the &amp;quot;FailedServerDetails&amp;quot; containing details only of Servers which have failed for the current week.=====
+      CurrentWeekFailedServerDetails &amp;lt;- FailedServerDetails %&amp;gt;% filter(Affected_Host %in% CurrentFailedServerList)
+      CurrentWeekFailedServerDetails &amp;lt;- CurrentWeekFailedServerDetails[order(-CurrentWeekFailedServerDetails$Total),]
+      CurrentWeekFailedServerDetails &amp;lt;- CurrentWeekFailedServerDetails[order(-CurrentWeekFailedServerDetails$Streak),]
+      
+# ====Finding the Point of Faliure.=====
+      CurrentWeekFailedServerDetails$PointOfFaliure &amp;lt;- &amp;quot;&amp;quot;
+      i&amp;lt;-1
+      for(server in CurrentWeekFailedServerDetails$Affected_Host){
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&amp;quot;Sudo&amp;quot;]==&amp;quot;Failed&amp;quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &amp;lt;- &amp;quot;Sudo&amp;quot;
+        }
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&amp;quot;Authentication&amp;quot;]==&amp;quot;Failed&amp;quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &amp;lt;- &amp;quot;Authentication&amp;quot;
+        }
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&amp;quot;SSH_to_endpoint&amp;quot;]==&amp;quot;Failed&amp;quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &amp;lt;- &amp;quot;SSH&amp;quot;
+        }
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&amp;quot;Port_Check_Status&amp;quot;]==&amp;quot;Failed&amp;quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &amp;lt;- &amp;quot;PortCheck&amp;quot;
+        }
+        
+        if(ConnectivityData[grep(server,ConnectivityData$Affected_Host),&amp;quot;Node1_Status&amp;quot;]==&amp;quot;Failed&amp;quot;){
+          CurrentWeekFailedServerDetails$PointOfFaliure[i] &amp;lt;- &amp;quot;Node1&amp;quot;
+        }
+        i&amp;lt;-i+1
+      }&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;create-main-dashboard&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;CREATE MAIN DASHBOARD&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# ===== Count the number of servers which have failed. Also Create a new column which says how many servers are on a streak since last week.=====
+      ConnectivityData &amp;lt;- mutate(ConnectivityData,Status = ifelse(Sudo==&amp;quot;Success&amp;quot;,1,0))
+      ConnectivityData &amp;lt;- mutate(ConnectivityData,CheckStatus=ifelse(Sudo==&amp;quot;Success&amp;quot;,0,1))
+      ConnectivityData$Streak &amp;lt;- 0
+      ServersOnStreak &amp;lt;- CurrentWeekFailedServerDetails %&amp;gt;% filter(Streak &amp;gt; 1) %&amp;gt;% select(Affected_Host)
+      ConnectivityData &amp;lt;- ConnectivityData %&amp;gt;% mutate(Streak = ifelse(Affected_Host %in% ServersOnStreak$Affected_Host,1,0))
+
+
+# ===== Summarise the &amp;quot;ConnectivityData&amp;quot; df.=====
+      MainDashboard &amp;lt;- ConnectivityData %&amp;gt;% group_by(Account) %&amp;gt;% summarise(Total = length(Affected_Host),Success = sum(Status),Failed = sum(CheckStatus),On.A.Streak = sum(Streak))
+
+
+# ===== Create the Graph =====      
+      melt(MainDashboard,&amp;quot;Account&amp;quot;) %&amp;gt;% hchart(&amp;quot;column&amp;quot;,hcaes(x=&amp;quot;Account&amp;quot;,y=&amp;quot;value&amp;quot;,group=&amp;quot;variable&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;account-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;ACCOUNT SUMMARY&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MainDashboard %&amp;gt;% kable(&amp;quot;html&amp;quot;,escape=F) %&amp;gt;% kable_styling(&amp;quot;hover&amp;quot;)%&amp;gt;%scroll_box(height=&amp;quot;500px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;failed-servers-of-current-week&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;FAILED SERVERS OF CURRENT WEEK&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# ===== Dashboard for Details on Current Weeks Falilures =====
+      CurrentWeekFailedServerDetails %&amp;gt;% mutate(Total = cell_spec(Total,&amp;quot;html&amp;quot;,color=ifelse(Total &amp;gt; 1,&amp;quot;red&amp;quot;,&amp;quot;black&amp;quot;)))%&amp;gt;% kable(&amp;quot;html&amp;quot;, escape = F) %&amp;gt;% kable_styling(&amp;quot;hover&amp;quot;, full_width = F)%&amp;gt;%scroll_box(height=&amp;quot;500px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;current-weeks-status-of-all-servers&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;CURRENT WEEKS STATUS OF ALL SERVERS&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# ===== Dashboard displaying details for all connectivity status for this week Successful as well as Failed.=====
+      ConnectivityData%&amp;gt;%select(-c(Status,CheckStatus)) %&amp;gt;% kable(&amp;quot;html&amp;quot;,escape = F) %&amp;gt;% kable_styling(&amp;quot;hover&amp;quot;, full_width = F)%&amp;gt;%scroll_box(height=&amp;quot;500px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Hello R Markdown</title>
       <link>/post/2015-07-23-r-rmarkdown/</link>
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
