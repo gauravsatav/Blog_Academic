@@ -1,6 +1,5 @@
 baseurl = "http://www.g29s.com/"  # End your URL with a `/` trailing slash, e.g. `https://example.com/`.
 title = "GAURAV SATAV"
-relativeurls=true
 copyright = "&copy; 2017 GAURAV SATAV"
 theme = "hugo-academic"
 enableEmoji = true
