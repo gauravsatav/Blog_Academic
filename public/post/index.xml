@@ -11,6 +11,1529 @@
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>KNN Learning</title>
+      <link>/post/knn-learning/</link>
+      <pubDate>Mon, 04 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/knn-learning/</guid>
+      <description>&lt;div id=&#34;installing-required-packages.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;INSTALLING REQUIRED PACKAGES.&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(class)
+library(caret)
+require(mlbench)
+library(e1071)
+library(base)
+require(base)
+library(kableExtra)
+library(knitr)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-1--data-collection&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Step 1- Data collection&lt;/h2&gt;
+&lt;p&gt;For this lesson, we will be using Sonar data set (signals) from mlbench library. Sonar is a system for the detection of objects under water and for measuring the water’s depth by emitting sound pulses and detecting. The complete description can be found in mlbench. For our purposes, this is a two-class (class R and class M) classification task with numeric data.&lt;/p&gt;
+&lt;p&gt;Let’s look at the first five rows of Sonar&lt;/p&gt;
+&lt;div style=&#34;border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:750px; &#34;&gt;
+&lt;table class=&#34;table table-hover&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V1
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V2
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V3
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V4
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V5
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V6
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V7
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V8
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V9
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V10
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V11
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V12
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V13
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V14
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V15
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V16
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V17
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V18
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V19
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V20
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V21
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V22
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V23
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V24
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V25
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V26
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V27
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V28
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V29
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V30
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V31
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V32
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V33
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V34
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V35
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V36
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V37
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V38
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V39
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V40
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V41
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V42
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V43
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V44
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V45
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V46
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V47
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V48
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V49
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V50
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V51
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V52
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V53
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V54
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V55
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V56
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V57
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V58
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V59
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V60
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Class
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0371
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0428
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0207
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0954
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0986
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1539
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1601
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3109
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2111
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1609
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1582
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2238
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0645
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0660
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2273
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5078
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4797
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5783
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5071
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4328
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5550
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6711
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6415
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7104
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8080
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6791
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3857
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1307
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2604
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5121
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7547
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8537
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8507
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6692
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6097
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4943
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2744
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0510
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2834
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2825
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4256
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2641
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1386
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1051
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1343
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0383
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0324
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0232
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0027
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0065
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0159
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0072
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0167
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0180
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0084
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0090
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0032
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+R
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0453
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0523
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0843
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0689
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1183
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2583
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2156
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3481
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3337
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2872
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4918
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6552
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6919
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7797
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7464
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9444
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8874
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8024
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7818
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5212
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4052
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3957
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3914
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3250
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3271
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2767
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4423
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2028
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3788
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2947
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1984
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2341
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1306
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4182
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3835
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1057
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1840
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1970
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1674
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0583
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1401
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1628
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0621
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0203
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0530
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0742
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0409
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0061
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0125
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0084
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0089
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0048
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0094
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0191
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0140
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0049
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0052
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0044
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+R
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0262
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0582
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1099
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1083
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0974
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2280
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2431
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3771
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5598
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6194
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6333
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7060
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5544
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5320
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6479
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6931
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6759
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7551
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8929
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8619
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7974
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6737
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4293
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3648
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5331
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2413
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5070
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8533
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6036
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8514
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8512
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5045
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1862
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2709
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4232
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3043
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6116
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6756
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5375
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4719
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4647
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2587
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2129
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2222
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2111
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0176
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1348
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0744
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0130
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0106
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0033
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0232
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0166
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0095
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0180
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0244
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0316
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0164
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0095
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0078
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+R
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0171
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0623
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0205
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0205
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0368
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1098
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1276
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0598
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1264
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0881
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1992
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0184
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2261
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1729
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2131
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0693
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2281
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4060
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3973
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2741
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3690
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5556
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4846
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3140
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5334
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5256
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2520
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2090
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3559
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6260
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7340
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6120
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3497
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3953
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3012
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5408
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8814
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9857
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9167
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6121
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5006
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3210
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3202
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4295
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3654
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2655
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1576
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0681
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0294
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0241
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0121
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0036
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0150
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0085
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0073
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0050
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0044
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0040
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0117
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+R
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0762
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0666
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0481
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0394
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0590
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0649
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1209
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2467
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3564
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4459
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4152
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3952
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4256
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4135
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5326
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7306
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6193
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2032
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4636
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4148
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4292
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5730
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5399
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3161
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2285
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6995
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7262
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4724
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5103
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5459
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2881
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0981
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1951
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4181
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4604
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3217
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2828
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2430
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1979
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2444
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1847
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0841
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0692
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0357
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0085
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0230
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0046
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0156
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0031
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0054
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0105
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0110
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0015
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0072
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0048
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0107
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0094
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+R
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0453
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0277
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0174
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0384
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0990
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1201
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1833
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2105
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3039
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2988
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4250
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6343
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8198
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9988
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9508
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9025
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7234
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5122
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2074
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3985
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5890
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2872
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2043
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5782
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5389
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3750
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3411
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5067
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5580
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4778
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3299
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2198
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1407
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2856
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3807
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4158
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4054
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3296
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2707
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2650
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0723
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1238
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1192
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1089
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0623
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0494
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0264
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0081
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0104
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0045
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0014
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0038
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0013
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0089
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0057
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0027
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0051
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0062
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+R
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-2--preparing-and-exploring-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Step 2- Preparing and exploring the data&lt;/h2&gt;
+&lt;p&gt;It is A data frame with 208 observations on 61 variables, all numerical and one (the Class) nominal.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## number of rows and columns are: 208 61&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Lets check how many M classes and R classes Sonar data contain and check whether Sonar data contains any NA in its columns.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##   M   R 
+## 111  97&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##    V1    V2    V3    V4    V5    V6    V7    V8    V9   V10   V11   V12 
+##     0     0     0     0     0     0     0     0     0     0     0     0 
+##   V13   V14   V15   V16   V17   V18   V19   V20   V21   V22   V23   V24 
+##     0     0     0     0     0     0     0     0     0     0     0     0 
+##   V25   V26   V27   V28   V29   V30   V31   V32   V33   V34   V35   V36 
+##     0     0     0     0     0     0     0     0     0     0     0     0 
+##   V37   V38   V39   V40   V41   V42   V43   V44   V45   V46   V47   V48 
+##     0     0     0     0     0     0     0     0     0     0     0     0 
+##   V49   V50   V51   V52   V53   V54   V55   V56   V57   V58   V59   V60 
+##     0     0     0     0     0     0     0     0     0     0     0     0 
+## Class 
+##     0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here, we want to manually take samples from our data to split &lt;code&gt;Sonar&lt;/code&gt; into training and test sets&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;SEED &amp;lt;- 123
+set.seed(SEED)
+data &amp;lt;- Sonar[base::sample(nrow(Sonar)), ] # shuffle data first
+bound &amp;lt;- floor(0.7 * nrow(data))
+df_train &amp;lt;- data[1:bound, ] 
+df_test &amp;lt;- data[(bound + 1):nrow(data), ]
+cat(&amp;quot;number of training and test samples are &amp;quot;, nrow(df_train), nrow(df_test))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## number of training and test samples are  145 63&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let’s examine if the train and test samples have properly splitted with the almost the same portion of &lt;code&gt;Class&lt;/code&gt; labels&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cat(&amp;quot;number of training classes: \n&amp;quot;, base::table(df_train$Class)/nrow(df_train))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## number of training classes: 
+##  0.5310345 0.4689655&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cat(&amp;quot;\n&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cat(&amp;quot;number of test classes: \n&amp;quot;, base::table(df_test$Class)/nrow(df_test))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## number of test classes: 
+##  0.5396825 0.4603175&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To simplify our job, we can create the following data frames&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;X_train &amp;lt;- subset(df_train, select=-Class)
+y_train &amp;lt;- df_train$Class
+X_test &amp;lt;- subset(df_test, select=-Class) # exclude Class for prediction
+y_test &amp;lt;- df_test$Class&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-3-training-a-model-on-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Step 3 – Training a model on data&lt;/h2&gt;
+&lt;p&gt;Now, we are going to use knn function from class library with k=3&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;model_knn &amp;lt;- knn(train=X_train,
+                 test=X_test,
+                 cl=y_train,  # class labels
+                 k=3)
+model_knn&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] M M M M R R M M M R M M M R M R R M M M M R M R R M R M R M M R M M M
+## [36] M M M R R M M M M M R R R R R M M R M R R R R R R M R M
+## Levels: M R&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-4-evaluate-the-model-performance&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Step 4 – Evaluate the model performance&lt;/h2&gt;
+&lt;p&gt;As you can see, model_knn with k=3 provides the above predictions for the test set X_test. Then, we can see how many classes have been correctly or incorrectly classified by comparing to the true labels as follows&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;conf_mat &amp;lt;- base::table(y_test, model_knn)
+conf_mat&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       model_knn
+## y_test  M  R
+##      M 28  6
+##      R  8 21&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To compute the accuracy, we sum up all the correctly classified observations (located in diagonal) and divide it by the total number of classes&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## Test accuracy:  0.7777778&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To assess whether k=3 is a good choice and see whether k=3&lt;/p&gt;
+&lt;p&gt;leads to overfitting/underfitting the data, we could use knn.cv which does the leave-one-out cross-validations for training set (i.e., it singles out a training sample one at a time and tries to view it as a new example and see what class label it assigns).&lt;/p&gt;
+&lt;p&gt;Below are the predicted classes for the training set using the leave-one-out cross-validation. Now, let’s examine its accuracy&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knn_loocv &amp;lt;- knn.cv(train=X_train, cl=y_train, k=3)
+knn_loocv&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   [1] R M R M M R M M M R M R M M M R R R R M M M M M M M R M R M M M M R M
+##  [36] R M R R R R M R R R R M R R M M M M R R R M M M R R R R M M R M M R R
+##  [71] M M M M R R M M M R M M M M M R M M M M R R M M R R R R R R M R M M M
+## [106] R M R R M M M M M R M M M M M R R M M M R M M R M R R M M R R R R M R
+## [141] M M R R M
+## Levels: M R&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Lets create a confusion matrix to compute the accuracy of the training labels y_train and the cross-validated predictions knn_loocv, same as the above. What can you find from comparing the LOOCV accuracy and the test accuracy above?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;conf_mat_cv &amp;lt;- base::table(y_train, knn_loocv)
+conf_mat_cv&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        knn_loocv
+## y_train  M  R
+##       M 67 10
+##       R 15 53&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cat(&amp;quot;LOOCV accuracy: &amp;quot;, sum(diag(conf_mat_cv)) / sum(conf_mat_cv))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## LOOCV accuracy:  0.8275862&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The difference between the cross-validated accuracy and the test accuracy shows that, k=3 leads to overfitting. Perhaps we should change k&lt;/p&gt;
+&lt;p&gt;to lessen the overfitting.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-5-improve-the-performance-of-the-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Step 5 – Improve the performance of the model&lt;/h2&gt;
+&lt;p&gt;As noted earlier, we have not standardized (as part of preprocessing) our training and test sets. In the rest of the tutorial, we will see the effect of choosing a suitable k&lt;/p&gt;
+&lt;p&gt;through repeated cross-validations using caret library.&lt;/p&gt;
+&lt;p&gt;In a cross-validation procedure:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;The data is divided into the finite number of mutually exclusive subsets&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Through each iteration, a subset is set aside, and the remaining subsets are used as the training set&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The subset that was set aside is used as the test set (prediction)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is a method of cross-referencing the model built using its own data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;SEED &amp;lt;- 2016
+set.seed(SEED)
+# create the training data 70% of the overall Sonar data.
+in_train &amp;lt;- createDataPartition(Sonar$Class, p=0.7, list=FALSE) # create training indices
+ndf_train &amp;lt;- Sonar[in_train, ]
+ndf_test &amp;lt;- Sonar[-in_train, ]&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here, we specify the cross-validation method we want to use to find the best k in grid search. Later, we use the built-in plot function to assess the changes in accuracy for different choices of k.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# lets create a function setup to do 5-fold cross-validation with 2 repeat.
+ctrl &amp;lt;- trainControl(method=&amp;quot;repeatedcv&amp;quot;, number=5, repeats=2)
+
+nn_grid &amp;lt;- expand.grid(k=c(1,3,5,7))
+nn_grid&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   k
+## 1 1
+## 2 3
+## 3 5
+## 4 7&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(SEED)
+
+best_knn &amp;lt;- train(Class~., data=ndf_train,
+                  method=&amp;quot;knn&amp;quot;,
+                  trControl=ctrl, 
+                  preProcess = c(&amp;quot;center&amp;quot;, &amp;quot;scale&amp;quot;),  # standardize
+                  tuneGrid=nn_grid)
+best_knn&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## k-Nearest Neighbors 
+## 
+## 146 samples
+##  60 predictor
+##   2 classes: &amp;#39;M&amp;#39;, &amp;#39;R&amp;#39; 
+## 
+## Pre-processing: centered (60), scaled (60) 
+## Resampling: Cross-Validated (5 fold, repeated 2 times) 
+## Summary of sample sizes: 116, 116, 117, 117, 118, 116, ... 
+## Resampling results across tuning parameters:
+## 
+##   k  Accuracy   Kappa    
+##   1  0.8593432  0.7152417
+##   3  0.8329310  0.6601456
+##   5  0.7846305  0.5602652
+##   7  0.7608210  0.5081680
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was k = 1.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So seemingly, k=1 has the highest accuracy from repeated cross-validation.&lt;/p&gt;
+&lt;div id=&#34;optional-exercise&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;(Optional) Exercise&lt;/h3&gt;
+&lt;p&gt;Try to do dimensionality reduction as part of preprocess to achieve higher testing accuracy than above. This may not have a definite solution and it depends on how hard you try!&lt;/p&gt;
+&lt;p&gt;If you are going to use caret, here are the available preprocess options with explanations.&lt;/p&gt;
+&lt;p&gt;Use the above best_knn to make predictions on the test set (remeber to remove the Class for prediction). Then create the much better version of confusion matrix with confusionMatrix function from caret and examine the accuracy and its %95 confidence interval.&lt;/p&gt;
+&lt;p&gt;In fact, the above result indicates k=1 (as could be guessed) is also overfitting, though it might be a better option than k=3. Since the initial dimension of our data is high (61&lt;/p&gt;
+&lt;p&gt;is considered high!), then you might have suspected the better approach, as we said at the beginning of tutorial, is to preform dimensionality reduction as part of preprocessing.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;optional-exercise-1&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;(Optional) Exercise&lt;/h3&gt;
+&lt;p&gt;Try to do dimensionality reduction as part of preprocess to achieve higher testing accuracy than above. This may not have a definite solution and it depends on how hard you try!&lt;/p&gt;
+&lt;p&gt;If you are going to use caret, here are the available preprocess options with explanations.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;SEED &amp;lt;- 123 
+set.seed(SEED) 
+ctrl &amp;lt;- trainControl(method=&amp;quot;repeatedcv&amp;quot;, number=5, repeats=5) 
+nn_grid &amp;lt;- expand.grid(k=c(1, 3, 5, 7)) 
+best_knn_reduced &amp;lt;- train( Class~., data=ndf_train, method=&amp;quot;knn&amp;quot;, 
+                            trControl=ctrl, preProcess=c(&amp;quot;center&amp;quot;, &amp;quot;scale&amp;quot;,&amp;quot;YeoJohnson&amp;quot;))
+X_test &amp;lt;- subset(ndf_test, select=-Class) 
+pred_reduced &amp;lt;- predict(best_knn_reduced, newdata=X_test, model=&amp;quot;best&amp;quot;) 
+conf_mat_best_reduced &amp;lt;- confusionMatrix(ndf_test$Class, pred_reduced) 
+conf_mat_best_reduced &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  M  R
+##          M 29  4
+##          R  9 20
+##                                           
+##                Accuracy : 0.7903          
+##                  95% CI : (0.6682, 0.8834)
+##     No Information Rate : 0.6129          
+##     P-Value [Acc &amp;gt; NIR] : 0.002277        
+##                                           
+##                   Kappa : 0.5744          
+##  Mcnemar&amp;#39;s Test P-Value : 0.267257        
+##                                           
+##             Sensitivity : 0.7632          
+##             Specificity : 0.8333          
+##          Pos Pred Value : 0.8788          
+##          Neg Pred Value : 0.6897          
+##              Prevalence : 0.6129          
+##          Detection Rate : 0.4677          
+##    Detection Prevalence : 0.5323          
+##       Balanced Accuracy : 0.7982          
+##                                           
+##        &amp;#39;Positive&amp;#39; Class : M               
+## &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Connectivity Representation using Flexdashboard library</title>
       <link>/post/flexdashboard_uc1/</link>
       <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
