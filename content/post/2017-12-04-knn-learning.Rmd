@@ -142,7 +142,7 @@ In a cross-validation procedure:
 
 * The data is divided into the finite number of mutually exclusive subsets
 
-* Through each iteration, a subset is set aside, and the remaining subsets are used as the training set
+* Through each iteration, a subset is set aside for testing, and the remaining subsets are used as the training set
 
 * The subset that was set aside is used as the test set (prediction)
 
