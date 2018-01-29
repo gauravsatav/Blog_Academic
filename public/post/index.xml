@@ -11,6 +11,17 @@
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Test Post</title>
+      <link>/post/test-post/</link>
+      <pubDate>Mon, 29 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/test-post/</guid>
+      <description>&lt;p&gt;We’ll first start by importing library “knitr” which will help us create a table.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>KNN Learning</title>
       <link>/post/knn-learning/</link>
       <pubDate>Mon, 04 Dec 2017 00:00:00 +0000</pubDate>
@@ -1431,7 +1442,7 @@ conf_mat_cv&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;In a cross-validation procedure:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;The data is divided into the finite number of mutually exclusive subsets&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Through each iteration, a subset is set aside, and the remaining subsets are used as the training set&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Through each iteration, a subset is set aside for testing, and the remaining subsets are used as the training set&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;The subset that was set aside is used as the test set (prediction)&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;This is a method of cross-referencing the model built using its own data.&lt;/p&gt;
