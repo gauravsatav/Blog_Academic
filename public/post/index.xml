@@ -11,13 +11,1176 @@
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Test Post</title>
-      <link>/post/test-post/</link>
-      <pubDate>Mon, 29 Jan 2018 00:00:00 +0000</pubDate>
+      <title>Predict the Criminals</title>
+      <link>/post/predict-the-criminals/</link>
+      <pubDate>Mon, 05 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>/post/test-post/</guid>
-      <description>&lt;p&gt;We’ll first start by importing library “knitr” which will help us create a table.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)&lt;/code&gt;&lt;/pre&gt;
+      <guid>/post/predict-the-criminals/</guid>
+      <description>&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;https://upsideinnovations.com/wp-content/uploads/2017/04/prisoner-jail.jpg&#34; /&gt;
+
+&lt;/div&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Decision which we make are a direct results of the experience we’ve gained over our lifetime and of many factors which led us to those experiences there are certain factors which contributed more than others. There is a greater chance of two individuals making similar decisions if they’ve had similar experiences which were driven by similar factors. In this problem we’ll try to determine those relations between factors and decsion which led to individuals to commit a crime.&lt;/p&gt;
+&lt;p&gt;The data set for this particular problem is available &lt;a href=&#34;https://www.hackerearth.com/challenge/competitive/predict-the-criminal/&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We are given 2 files:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;criminal_train&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;criminal_test&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;code&gt;criminal_train&lt;/code&gt; dataset consist of answer to &lt;strong&gt;71&lt;/strong&gt; variables which are related to the private information of around &lt;strong&gt;45718&lt;/strong&gt; individuals. The last column in this dataset &lt;code&gt;Criminal&lt;/code&gt; consist of either &lt;strong&gt;1&lt;/strong&gt; or &lt;strong&gt;0&lt;/strong&gt; and indicates whether they commited crime at some point in time. Similarly the &lt;code&gt;criminal_test&lt;/code&gt; dataset contains the answers to same variables as that of &lt;code&gt;criminal_train&lt;/code&gt; except that it doesen’t contain the last column &lt;code&gt;Criminal&lt;/code&gt; and our job is to build up a model to predict the same.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;preparation&#34; class=&#34;section level1 tabset tabset-fade tabset-pills&#34;&gt;
+&lt;h1&gt;Preparation&lt;/h1&gt;
+&lt;div id=&#34;importing-libraries&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Importing Libraries&lt;/h2&gt;
+&lt;p&gt;We’ll make use of mutiple R libraries for visualization and to handle data. Click on &lt;em&gt;show code&lt;/em&gt; to see the libraries we’re required to import.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Data Handling
+library(dplyr)
+
+# Visualization
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(corrplot) #used for plotting co-relations.
+
+# Machine Learning Libraries
+library(randomForest)
+library(caret)
+library(glmnet)
+library(gbm)
+library(mlbench)
+library(caTools)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;overview-understanding-the-file-structure.&#34; class=&#34;section level1 tabset tabset-fade tabset-pills&#34;&gt;
+&lt;h1&gt;Overview : Understanding the file structure.&lt;/h1&gt;
+&lt;div id=&#34;what-do-the-variables-mean&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What do the variables mean?&lt;/h2&gt;
+&lt;p&gt;The table below shows us the meaning of the variables.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;VariableMeaning &amp;lt;- read.csv(&amp;quot;~/Desktop/ME/MyWebsites/Blog2/data/Criminal/Data/var.csv&amp;quot;)
+VariableMeaning %&amp;gt;% kable(format = &amp;quot;html&amp;quot;) %&amp;gt;% kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;,&amp;quot;hover&amp;quot;,&amp;quot;condensed&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Variable.Name
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Description
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PERID
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Person ID
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IFATHER
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FATHER IN HOUSEHOLD
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NRCH17_2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RECODED # R’s CHILDREN &amp;lt; 18 IN HOUSEHOLD
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRHHSIZ2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RECODE - IMPUTATION-REVISED # PERSONS IN HH
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIHHSIZ2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRKI17_2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IMPUTATION-REVISED # KIDS AGED&amp;lt;18 IN HH
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIKI17_2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRKI17_2-IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRHH65_2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+REC - IMPUTATION-REVISED # OF PER IN HH AGED&amp;gt;=65
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIHH65_2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRHH65_2-IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PRXRETRY
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SELECTED PROXY UNAVAILABLE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+OTHER PROXY AVAILABLE?
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PRXYDATA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IS PROXY ANSWERING INSURANCE/INCOME QS
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MEDICARE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COVERED BY MEDICARE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CAIDCHIP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COVERED BY MEDICAID/CHIP
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHAMPUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COV BY TRICARE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHAMPUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHAMPVA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MILITARY
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PRVHLTIN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COVERED BY PRIVATE INSURANCE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GRPHLTIN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PRIVATE PLAN OFFERED THROUGH EMPLOYER OR UNION
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLTINNOS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COVERED BY HEALTH INSUR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLCNOTYR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ANYTIME DID NOT HAVE HEALTH INS/COVER PAST 12 MOS
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLCNOTMO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PAST 12 MOS
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HOW MANY MOS W/O COVERAGE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLCLAST
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TIME SINCE LAST HAD HEALTH CARE COVERAGE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLLOSRSN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAIN REASON STOPPED COVERED BY HEALTH INSURANCE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLNVCOST
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COST TOO HIGH
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLNVOFFR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EMPLOYER DOESN’T OFFER
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLNVREF
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+INSURANCE COMPANY REFUSED COVERAGE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLNVNEED
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+DON’T NEED IT
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLNVSOR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NEVER HAD HLTH INS SOME OTHER REASON
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRMCDCHP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IMPUTATION REVISED CAIDCHIP
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIMCDCHP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MEDICAID/CHIP - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRMEDICR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MEDICARE - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIMEDICR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MEDICARE - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRCHMPUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHAMPUS - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IICHMPUS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CHAMPUS - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRPRVHLT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PRIVATE HEALTH INSURANCE - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIPRVHLT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PRIVATE HEALTH INSURANCE - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IROTHHLT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+OTHER HEALTH INSURANCE - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIOTHHLT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+OTHER HEALTH INSURANCE - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLCALLFG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FLAG IF EVERY FORM OF HEALTH INS REPORTED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HLCALL99
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+YES TO MEDICARE/MEDICAID/CHAMPUS/PRVHLTIN
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ANYHLTI2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COVERED BY ANY HEALTH INSURANCE - RECODE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRINSUR4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RC-OVERALL HEALTH INSURANCE - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIINSUR4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RC-OVERALL HEALTH INSURANCE - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+OTHINS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RC-OTHER HEALTH INSURANCE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CELLNOTCL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NOT A CELL PHONE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CELLWRKNG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+WORKING CELL PHONE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRFAMSOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM RECEIVE SS OR RR PAYMENTS - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIFAMSOC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM RECEIVE SS OR RR PAYMENTS - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRFAMSSI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM RECEIVE SSI - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIFAMSSI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM RECEIVE SSI - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRFSTAMP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RESP/OTH FAM MEM REC FOOD STAMPS - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIFSTAMP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RESP/OTH FAM MEM REC FOOD STAMPS - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRFAMPMT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM RECEIVE PUBLIC ASSIST - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIFAMPMT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM RECEIVE PUBLIC ASSIST - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRFAMSVC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM REC WELFARE/JOB PL/CHILDCARE - IMPUTATION REVISED
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIFAMSVC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FAM REC WELFARE/JOB PL/CHILDCARE - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRWELMOS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IMP. REVISED - NO.OF MONTHS ON WELFARE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIWELMOS
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NO OF MONTHS ON WELFARE - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRPINC3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RESP TOT INCOME (FINER CAT) - IMP REV
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRFAMIN3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RECODE - IMP.REVISED - TOT FAM INCOME
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIPINC3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RESP TOT INCOME (FINER CAT) - IMP INDIC
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IIFAMIN3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IRFAMIN3 - IMPUTATION INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+GOVTPROG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RC-PARTICIPATED IN ONE OR MORE GOVT ASSIST PROGRAMS
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+POVERTY3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RC-POVERTY LEVEL
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TOOLONG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+RESP SAID INTERVIEW WAS TOO LONG
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TROUBUND
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+DID RESP HAVE TROUBLE UNDERSTANDING INTERVIEW
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PDEN10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+POPULATION DENSITY 2010
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COUTYP2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+COUNTY METRO/NONMETRO STATUS
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAIIN102
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MAJORITY AMER INDIAN AREA INDICATOR FOR SEGMENT
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AIIND102
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AMER INDIAN AREA INDICATOR
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ANALWT_C
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+FIN PRSN-LEVEL SIMPLE WGHT
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VESTR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ANALYSIS STRATUM
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VEREP
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ANALYSIS REPLICATE
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Criminal
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Target Variable
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;structure-of-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Structure of Data&lt;/h2&gt;
+&lt;p&gt;We’ll just take a quick look into the structure of the data for each of the variables. Obviously we see that the data is already encoded and has the data type &lt;code&gt;integer&lt;/code&gt;. Even our target variable has its data type set to integer. We will require to change that to &lt;code&gt;factor&lt;/code&gt; since we’ll be using the &lt;strong&gt;GBM&lt;/strong&gt; model to classify our target variable into one of the two levels (&lt;strong&gt;1&lt;/strong&gt; if person is criminal and &lt;strong&gt;0&lt;/strong&gt; otherwise )&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;train &amp;lt;- read.csv(&amp;quot;~/Desktop/ME/MyWebsites/Blog2/data/Criminal/Data/criminal_train.csv&amp;quot;)
+str(train)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    45718 obs. of  72 variables:
+##  $ PERID    : int  25095143 13005143 67415143 70925143 75235143 47745143 33145143 63765143 57796143 66416143 ...
+##  $ IFATHER  : int  4 4 4 4 1 4 4 4 4 4 ...
+##  $ NRCH17_2 : int  2 1 1 0 0 0 3 2 1 0 ...
+##  $ IRHHSIZ2 : int  4 3 2 2 6 2 6 4 3 1 ...
+##  $ IIHHSIZ2 : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRKI17_2 : int  3 2 2 1 4 1 4 3 2 1 ...
+##  $ IIKI17_2 : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRHH65_2 : int  1 1 1 1 1 1 1 1 1 2 ...
+##  $ IIHH65_2 : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ PRXRETRY : int  99 99 99 99 99 99 99 99 99 99 ...
+##  $ PRXYDATA : int  99 99 99 99 1 99 99 99 99 99 ...
+##  $ MEDICARE : int  2 2 2 2 2 2 2 2 2 1 ...
+##  $ CAIDCHIP : int  1 2 1 2 1 2 1 2 2 2 ...
+##  $ CHAMPUS  : int  2 2 2 2 2 2 2 2 2 2 ...
+##  $ PRVHLTIN : int  2 1 2 1 2 2 2 2 2 1 ...
+##  $ GRPHLTIN : int  99 1 99 1 99 99 99 99 99 1 ...
+##  $ HLTINNOS : int  99 99 99 99 99 2 99 2 2 99 ...
+##  $ HLCNOTYR : int  2 2 2 2 2 99 2 99 99 2 ...
+##  $ HLCNOTMO : int  99 99 99 99 99 99 99 99 99 99 ...
+##  $ HLCLAST  : int  99 99 99 99 99 1 99 5 2 99 ...
+##  $ HLLOSRSN : int  99 99 99 99 99 1 99 99 2 99 ...
+##  $ HLNVCOST : int  99 99 99 99 99 99 99 1 99 99 ...
+##  $ HLNVOFFR : int  99 99 99 99 99 99 99 6 99 99 ...
+##  $ HLNVREF  : int  99 99 99 99 99 99 99 6 99 99 ...
+##  $ HLNVNEED : int  99 99 99 99 99 99 99 6 99 99 ...
+##  $ HLNVSOR  : int  99 99 99 99 99 99 99 6 99 99 ...
+##  $ IRMCDCHP : int  1 2 1 2 1 2 1 2 2 2 ...
+##  $ IIMCDCHP : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRMEDICR : int  2 2 2 2 2 2 2 2 2 1 ...
+##  $ IIMEDICR : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRCHMPUS : int  2 2 2 2 2 2 2 2 2 2 ...
+##  $ IICHMPUS : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRPRVHLT : int  2 1 2 1 2 2 2 2 2 1 ...
+##  $ IIPRVHLT : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IROTHHLT : int  99 99 99 99 99 2 99 2 2 99 ...
+##  $ IIOTHHLT : int  9 9 9 9 9 1 9 1 1 9 ...
+##  $ HLCALLFG : int  98 98 98 98 98 98 98 98 98 98 ...
+##  $ HLCALL99 : int  98 98 98 98 98 98 98 98 98 98 ...
+##  $ ANYHLTI2 : int  1 1 1 1 1 2 1 2 2 1 ...
+##  $ IRINSUR4 : int  1 1 1 1 1 2 1 2 2 1 ...
+##  $ IIINSUR4 : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ OTHINS   : int  2 2 2 2 2 2 2 2 2 1 ...
+##  $ CELLNOTCL: int  1 1 2 1 2 2 2 1 2 1 ...
+##  $ CELLWRKNG: int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRFAMSOC : int  2 2 1 2 2 2 2 2 2 1 ...
+##  $ IIFAMSOC : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRFAMSSI : int  2 2 2 2 2 2 2 2 2 2 ...
+##  $ IIFAMSSI : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRFSTAMP : int  1 1 1 2 1 2 1 1 2 2 ...
+##  $ IIFSTAMP : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRFAMPMT : int  2 2 2 2 2 2 1 2 2 2 ...
+##  $ IIFAMPMT : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRFAMSVC : int  2 2 2 2 1 2 2 2 2 2 ...
+##  $ IIFAMSVC : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IRWELMOS : int  99 99 99 99 1 99 1 99 99 99 ...
+##  $ IIWELMOS : int  9 9 9 9 1 9 1 9 9 9 ...
+##  $ IRPINC3  : int  1 1 2 7 1 2 1 1 1 6 ...
+##  $ IRFAMIN3 : int  4 1 2 7 2 3 1 1 1 6 ...
+##  $ IIPINC3  : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ IIFAMIN3 : int  1 1 1 1 1 1 1 1 3 1 ...
+##  $ GOVTPROG : int  1 1 1 2 1 2 1 1 2 2 ...
+##  $ POVERTY3 : int  2 1 1 3 1 2 1 1 1 3 ...
+##  $ TOOLONG  : int  1 2 2 2 2 2 2 2 2 2 ...
+##  $ TROUBUND : int  2 2 2 2 2 2 2 2 2 2 ...
+##  $ PDEN10   : int  1 2 2 1 2 2 2 2 2 1 ...
+##  $ COUTYP2  : int  1 3 3 1 2 3 2 2 1 1 ...
+##  $ MAIIN102 : int  2 2 2 2 2 2 2 2 2 2 ...
+##  $ AIIND102 : int  2 2 2 2 2 2 2 2 2 2 ...
+##  $ ANALWT_C : num  3885 1627 4345 793 1518 ...
+##  $ VESTR    : int  40026 40015 40024 40027 40001 40035 40043 40006 40021 40006 ...
+##  $ VEREP    : int  1 2 1 1 2 2 2 2 2 1 ...
+##  $ Criminal : int  0 1 0 0 0 0 0 0 0 0 ...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-summary-of-dataset.&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;A summary of dataset.&lt;/h1&gt;
+&lt;p&gt;Lets quickly get a headcount of what is the ratio of criminals in our dataset.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;train %&amp;gt;% group_by(Criminal) %&amp;gt;% summarise(Count=length(Criminal)) %&amp;gt;% 
+  kable(format = &amp;quot;html&amp;quot;) %&amp;gt;% kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;,&amp;quot;hover&amp;quot;,&amp;quot;condensed&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Criminal
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Count
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+42543
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3175
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;That is 1 in every 3545.&lt;/p&gt;
+&lt;div id=&#34;preparing-data.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Preparing Data.&lt;/h2&gt;
+&lt;p&gt;We’ll identify our target varible and our predictor variables by giving them seperate names. This will help in reproducing the below code for a different set of predictors and target without having to change our code by much.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;outcomeVariable &amp;lt;- &amp;quot;Criminal&amp;quot;
+predictorVariables &amp;lt;- colnames(train)[colnames(train) != outcomeVariable]&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Since our problem is of the type &lt;strong&gt;“Classification”&lt;/strong&gt;, we’ll have to turn our target variables into type &lt;em&gt;factor&lt;/em&gt; instead of &lt;em&gt;integer&lt;/em&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;train[,outcomeVariable] &amp;lt;- ifelse(train[,outcomeVariable]==1,&amp;#39;yes&amp;#39;,&amp;#39;nope&amp;#39;)
+train[,outcomeVariable] &amp;lt;- as.factor(train[,outcomeVariable])&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;developing-a-model&#34; class=&#34;section level1 tabset tabset-fade tabset-pills&#34;&gt;
+&lt;h1&gt;Developing a model&lt;/h1&gt;
+&lt;div id=&#34;splitting-the-train-data.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Splitting the train data.&lt;/h2&gt;
+&lt;p&gt;Next we have to split the training data into 2 partitions. The first partition- &lt;code&gt;trainDF&lt;/code&gt; will be used to train our model and later on we can then test the performance of the model on the second partition - &lt;code&gt;testDF&lt;/code&gt; which will give us a pretty good idea about how accurate our model is.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(1234)
+splitIndex &amp;lt;- createDataPartition(train[,outcomeVariable], p = .75, list = FALSE, times = 1)
+trainDF &amp;lt;- train[ splitIndex,]
+testDF  &amp;lt;- train[-splitIndex,]&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;choosing-parameters-gbm&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Choosing parameters (GBM)&lt;/h2&gt;
+&lt;p&gt;The GBM model takes into account 3 important parameters.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;trees&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;shrinkage&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;interaction depth&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;we can pass the values to these parameters manually or we can make use of the &lt;code&gt;trainControl&lt;/code&gt; function which will choose the best values of these parameters. Over here, we’re going to do just that.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;objControl &amp;lt;- trainControl(method=&amp;#39;cv&amp;#39;, number=3, returnResamp=&amp;#39;none&amp;#39;, summaryFunction = twoClassSummary, classProbs = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;gbm-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;GBM Model&lt;/h2&gt;
+&lt;p&gt;Now that our parameters are set, we can now create a model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;objModel &amp;lt;- train(trainDF[,predictorVariables], trainDF[,outcomeVariable], 
+                  method=&amp;#39;gbm&amp;#39;, 
+                  trControl=objControl,  
+                  metric = &amp;quot;ROC&amp;quot;,
+                  preProc = c(&amp;quot;center&amp;quot;, &amp;quot;scale&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4918            -nan     0.1000    0.0064
+##      2        0.4817            -nan     0.1000    0.0052
+##      3        0.4717            -nan     0.1000    0.0052
+##      4        0.4621            -nan     0.1000    0.0047
+##      5        0.4525            -nan     0.1000    0.0047
+##      6        0.4439            -nan     0.1000    0.0042
+##      7        0.4353            -nan     0.1000    0.0042
+##      8        0.4277            -nan     0.1000    0.0038
+##      9        0.4205            -nan     0.1000    0.0038
+##     10        0.4135            -nan     0.1000    0.0035
+##     20        0.3590            -nan     0.1000    0.0021
+##     40        0.3050            -nan     0.1000    0.0008
+##     60        0.2765            -nan     0.1000    0.0004
+##     80        0.2554            -nan     0.1000    0.0001
+##    100        0.2422            -nan     0.1000   -0.0000
+##    120        0.2348            -nan     0.1000   -0.0000
+##    140        0.2292            -nan     0.1000   -0.0000
+##    150        0.2271            -nan     0.1000    0.0003
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4536            -nan     0.1000    0.0252
+##      2        0.4204            -nan     0.1000    0.0160
+##      3        0.3971            -nan     0.1000    0.0116
+##      4        0.3788            -nan     0.1000    0.0089
+##      5        0.3647            -nan     0.1000    0.0072
+##      6        0.3523            -nan     0.1000    0.0059
+##      7        0.3425            -nan     0.1000    0.0049
+##      8        0.3376            -nan     0.1000    0.0024
+##      9        0.3294            -nan     0.1000    0.0041
+##     10        0.3221            -nan     0.1000    0.0035
+##     20        0.2803            -nan     0.1000    0.0019
+##     40        0.2376            -nan     0.1000    0.0010
+##     60        0.2240            -nan     0.1000   -0.0000
+##     80        0.2176            -nan     0.1000   -0.0000
+##    100        0.2135            -nan     0.1000    0.0001
+##    120        0.2112            -nan     0.1000   -0.0000
+##    140        0.2094            -nan     0.1000    0.0000
+##    150        0.2088            -nan     0.1000   -0.0000
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4356            -nan     0.1000    0.0330
+##      2        0.4023            -nan     0.1000    0.0165
+##      3        0.3752            -nan     0.1000    0.0134
+##      4        0.3491            -nan     0.1000    0.0125
+##      5        0.3319            -nan     0.1000    0.0084
+##      6        0.3180            -nan     0.1000    0.0067
+##      7        0.3049            -nan     0.1000    0.0064
+##      8        0.2947            -nan     0.1000    0.0051
+##      9        0.2861            -nan     0.1000    0.0042
+##     10        0.2783            -nan     0.1000    0.0039
+##     20        0.2468            -nan     0.1000    0.0008
+##     40        0.2211            -nan     0.1000    0.0002
+##     60        0.2139            -nan     0.1000    0.0001
+##     80        0.2102            -nan     0.1000   -0.0001
+##    100        0.2080            -nan     0.1000    0.0001
+##    120        0.2059            -nan     0.1000   -0.0000
+##    140        0.2035            -nan     0.1000   -0.0000
+##    150        0.2027            -nan     0.1000   -0.0001
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4919            -nan     0.1000    0.0063
+##      2        0.4815            -nan     0.1000    0.0052
+##      3        0.4705            -nan     0.1000    0.0051
+##      4        0.4609            -nan     0.1000    0.0047
+##      5        0.4514            -nan     0.1000    0.0046
+##      6        0.4434            -nan     0.1000    0.0042
+##      7        0.4352            -nan     0.1000    0.0041
+##      8        0.4273            -nan     0.1000    0.0038
+##      9        0.4203            -nan     0.1000    0.0037
+##     10        0.4134            -nan     0.1000    0.0035
+##     20        0.3602            -nan     0.1000    0.0023
+##     40        0.3077            -nan     0.1000    0.0008
+##     60        0.2725            -nan     0.1000    0.0003
+##     80        0.2522            -nan     0.1000    0.0003
+##    100        0.2391            -nan     0.1000    0.0002
+##    120        0.2312            -nan     0.1000    0.0001
+##    140        0.2244            -nan     0.1000    0.0000
+##    150        0.2228            -nan     0.1000   -0.0000
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4536            -nan     0.1000    0.0251
+##      2        0.4223            -nan     0.1000    0.0162
+##      3        0.3986            -nan     0.1000    0.0119
+##      4        0.3805            -nan     0.1000    0.0092
+##      5        0.3656            -nan     0.1000    0.0073
+##      6        0.3533            -nan     0.1000    0.0060
+##      7        0.3472            -nan     0.1000    0.0027
+##      8        0.3376            -nan     0.1000    0.0049
+##      9        0.3296            -nan     0.1000    0.0037
+##     10        0.3233            -nan     0.1000    0.0030
+##     20        0.2763            -nan     0.1000    0.0002
+##     40        0.2353            -nan     0.1000    0.0006
+##     60        0.2195            -nan     0.1000    0.0001
+##     80        0.2130            -nan     0.1000   -0.0000
+##    100        0.2095            -nan     0.1000   -0.0000
+##    120        0.2077            -nan     0.1000   -0.0001
+##    140        0.2056            -nan     0.1000    0.0001
+##    150        0.2048            -nan     0.1000   -0.0000
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4348            -nan     0.1000    0.0349
+##      2        0.3975            -nan     0.1000    0.0184
+##      3        0.3665            -nan     0.1000    0.0154
+##      4        0.3466            -nan     0.1000    0.0095
+##      5        0.3305            -nan     0.1000    0.0078
+##      6        0.3155            -nan     0.1000    0.0076
+##      7        0.3036            -nan     0.1000    0.0061
+##      8        0.2983            -nan     0.1000    0.0024
+##      9        0.2884            -nan     0.1000    0.0049
+##     10        0.2801            -nan     0.1000    0.0041
+##     20        0.2428            -nan     0.1000    0.0005
+##     40        0.2176            -nan     0.1000    0.0001
+##     60        0.2093            -nan     0.1000    0.0002
+##     80        0.2059            -nan     0.1000   -0.0001
+##    100        0.2034            -nan     0.1000   -0.0001
+##    120        0.2012            -nan     0.1000   -0.0000
+##    140        0.1992            -nan     0.1000    0.0000
+##    150        0.1984            -nan     0.1000   -0.0001
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4913            -nan     0.1000    0.0065
+##      2        0.4806            -nan     0.1000    0.0053
+##      3        0.4704            -nan     0.1000    0.0051
+##      4        0.4609            -nan     0.1000    0.0048
+##      5        0.4515            -nan     0.1000    0.0046
+##      6        0.4433            -nan     0.1000    0.0043
+##      7        0.4351            -nan     0.1000    0.0041
+##      8        0.4276            -nan     0.1000    0.0039
+##      9        0.4203            -nan     0.1000    0.0037
+##     10        0.4132            -nan     0.1000    0.0036
+##     20        0.3590            -nan     0.1000    0.0023
+##     40        0.3039            -nan     0.1000    0.0014
+##     60        0.2721            -nan     0.1000    0.0009
+##     80        0.2524            -nan     0.1000    0.0007
+##    100        0.2398            -nan     0.1000    0.0001
+##    120        0.2306            -nan     0.1000    0.0001
+##    140        0.2249            -nan     0.1000    0.0000
+##    150        0.2228            -nan     0.1000    0.0001
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4539            -nan     0.1000    0.0255
+##      2        0.4217            -nan     0.1000    0.0163
+##      3        0.3978            -nan     0.1000    0.0118
+##      4        0.3796            -nan     0.1000    0.0091
+##      5        0.3648            -nan     0.1000    0.0073
+##      6        0.3527            -nan     0.1000    0.0060
+##      7        0.3425            -nan     0.1000    0.0050
+##      8        0.3351            -nan     0.1000    0.0038
+##      9        0.3264            -nan     0.1000    0.0042
+##     10        0.3220            -nan     0.1000    0.0023
+##     20        0.2762            -nan     0.1000    0.0022
+##     40        0.2342            -nan     0.1000    0.0002
+##     60        0.2196            -nan     0.1000    0.0005
+##     80        0.2144            -nan     0.1000   -0.0000
+##    100        0.2100            -nan     0.1000   -0.0000
+##    120        0.2077            -nan     0.1000    0.0000
+##    140        0.2057            -nan     0.1000   -0.0000
+##    150        0.2044            -nan     0.1000   -0.0000
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4366            -nan     0.1000    0.0346
+##      2        0.3995            -nan     0.1000    0.0184
+##      3        0.3669            -nan     0.1000    0.0157
+##      4        0.3474            -nan     0.1000    0.0095
+##      5        0.3297            -nan     0.1000    0.0088
+##      6        0.3149            -nan     0.1000    0.0071
+##      7        0.3095            -nan     0.1000    0.0025
+##      8        0.2989            -nan     0.1000    0.0055
+##      9        0.2888            -nan     0.1000    0.0049
+##     10        0.2811            -nan     0.1000    0.0038
+##     20        0.2416            -nan     0.1000    0.0018
+##     40        0.2176            -nan     0.1000    0.0006
+##     60        0.2092            -nan     0.1000    0.0001
+##     80        0.2064            -nan     0.1000   -0.0000
+##    100        0.2030            -nan     0.1000   -0.0001
+##    120        0.2014            -nan     0.1000   -0.0001
+##    140        0.1996            -nan     0.1000   -0.0001
+##    150        0.1988            -nan     0.1000   -0.0000
+## 
+## Iter   TrainDeviance   ValidDeviance   StepSize   Improve
+##      1        0.4371            -nan     0.1000    0.0338
+##      2        0.3961            -nan     0.1000    0.0201
+##      3        0.3702            -nan     0.1000    0.0129
+##      4        0.3475            -nan     0.1000    0.0113
+##      5        0.3303            -nan     0.1000    0.0085
+##      6        0.3164            -nan     0.1000    0.0069
+##      7        0.3034            -nan     0.1000    0.0063
+##      8        0.2934            -nan     0.1000    0.0049
+##      9        0.2890            -nan     0.1000    0.0019
+##     10        0.2806            -nan     0.1000    0.0041
+##     20        0.2437            -nan     0.1000    0.0004
+##     40        0.2190            -nan     0.1000    0.0002
+##     60        0.2123            -nan     0.1000   -0.0000
+##     80        0.2090            -nan     0.1000   -0.0000
+##    100        0.2065            -nan     0.1000   -0.0000
+##    120        0.2047            -nan     0.1000   -0.0000
+##    140        0.2038            -nan     0.1000   -0.0001
+##    150        0.2031            -nan     0.1000   -0.0001&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After creating a model, lets have a quick look at the variables and their relative influence on our output variable&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(objModel)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;../post/2018-02-05-predict-the-criminals_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##                 var      rel.inf
+## GRPHLTIN   GRPHLTIN 43.674482136
+## IRFAMIN3   IRFAMIN3 20.733352266
+## IRPINC3     IRPINC3 11.057674945
+## IFATHER     IFATHER  9.588943601
+## IRMEDICR   IRMEDICR  7.689551281
+## IRPRVHLT   IRPRVHLT  1.372119187
+## POVERTY3   POVERTY3  1.017095075
+## ANALWT_C   ANALWT_C  0.793418038
+## PRVHLTIN   PRVHLTIN  0.639839025
+## PERID         PERID  0.635383244
+## CELLNOTCL CELLNOTCL  0.378938502
+## IRFAMSOC   IRFAMSOC  0.349041147
+## PRXYDATA   PRXYDATA  0.291052221
+## MEDICARE   MEDICARE  0.277736643
+## IRHHSIZ2   IRHHSIZ2  0.190436223
+## VESTR         VESTR  0.177281884
+## HLCNOTMO   HLCNOTMO  0.106181878
+## IIFAMSSI   IIFAMSSI  0.084817013
+## PDEN10       PDEN10  0.080050274
+## NRCH17_2   NRCH17_2  0.074040915
+## CAIDCHIP   CAIDCHIP  0.072778202
+## IIWELMOS   IIWELMOS  0.071822488
+## VEREP         VEREP  0.064524688
+## CELLWRKNG CELLWRKNG  0.059871927
+## ANYHLTI2   ANYHLTI2  0.051383720
+## GOVTPROG   GOVTPROG  0.046990713
+## CHAMPUS     CHAMPUS  0.044893595
+## COUTYP2     COUTYP2  0.040762944
+## IRHH65_2   IRHH65_2  0.036501967
+## HLCNOTYR   HLCNOTYR  0.034450145
+## PRXRETRY   PRXRETRY  0.033912281
+## IRKI17_2   IRKI17_2  0.029253668
+## TROUBUND   TROUBUND  0.027241688
+## IIFAMSVC   IIFAMSVC  0.025122167
+## IIFAMIN3   IIFAMIN3  0.024965428
+## IIFAMSOC   IIFAMSOC  0.019951893
+## TOOLONG     TOOLONG  0.018547615
+## IIHH65_2   IIHH65_2  0.017405200
+## IIFAMPMT   IIFAMPMT  0.016519325
+## IRFAMSSI   IRFAMSSI  0.016494230
+## IIFSTAMP   IIFSTAMP  0.013162846
+## IIKI17_2   IIKI17_2  0.008330601
+## IIPINC3     IIPINC3  0.007346404
+## IRMCDCHP   IRMCDCHP  0.006330768
+## IIHHSIZ2   IIHHSIZ2  0.000000000
+## HLTINNOS   HLTINNOS  0.000000000
+## HLCLAST     HLCLAST  0.000000000
+## HLLOSRSN   HLLOSRSN  0.000000000
+## HLNVCOST   HLNVCOST  0.000000000
+## HLNVOFFR   HLNVOFFR  0.000000000
+## HLNVREF     HLNVREF  0.000000000
+## HLNVNEED   HLNVNEED  0.000000000
+## HLNVSOR     HLNVSOR  0.000000000
+## IIMCDCHP   IIMCDCHP  0.000000000
+## IIMEDICR   IIMEDICR  0.000000000
+## IRCHMPUS   IRCHMPUS  0.000000000
+## IICHMPUS   IICHMPUS  0.000000000
+## IIPRVHLT   IIPRVHLT  0.000000000
+## IROTHHLT   IROTHHLT  0.000000000
+## IIOTHHLT   IIOTHHLT  0.000000000
+## HLCALLFG   HLCALLFG  0.000000000
+## HLCALL99   HLCALL99  0.000000000
+## IRINSUR4   IRINSUR4  0.000000000
+## IIINSUR4   IIINSUR4  0.000000000
+## OTHINS       OTHINS  0.000000000
+## IRFSTAMP   IRFSTAMP  0.000000000
+## IRFAMPMT   IRFAMPMT  0.000000000
+## IRFAMSVC   IRFAMSVC  0.000000000
+## IRWELMOS   IRWELMOS  0.000000000
+## MAIIN102   MAIIN102  0.000000000
+## AIIND102   AIIND102  0.000000000&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We find that the&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;code&gt;GRPHLTIN&lt;/code&gt; &lt;em&gt;( PRIVATE PLAN OFFERED THROUGH EMPLOYER OR UNION )&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IRFAMIN3&lt;/code&gt; &lt;em&gt;(RECODE - IMP.REVISED - TOT FAM INCOME)&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IRPINC3&lt;/code&gt; &lt;em&gt;(RESP TOT INCOME (FINER CAT) - IMP REV )&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IFATHER&lt;/code&gt; &lt;em&gt;( FATHER IN HOUSEHOLD )&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IRMEDICR&lt;/code&gt; &lt;em&gt;(MEDICARE - IMPUTATION REVISED)&lt;/em&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Now this is interesting but at the same time it is also what we would have expected. An individuals income and consequences of living in a household without a father figure are a few of the variables we could have expected to contribute significantly.&lt;/p&gt;
+&lt;p&gt;Also lets take a look at what tuning parameters were used.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;print(objModel)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Stochastic Gradient Boosting 
+## 
+## 34290 samples
+##    71 predictor
+##     2 classes: &amp;#39;nope&amp;#39;, &amp;#39;yes&amp;#39; 
+## 
+## Pre-processing: centered (71), scaled (71) 
+## Resampling: Cross-Validated (3 fold) 
+## Summary of sample sizes: 22860, 22860, 22860 
+## Resampling results across tuning parameters:
+## 
+##   interaction.depth  n.trees  ROC        Sens       Spec       
+##   1                   50      0.9678422  0.9998120  0.003358522
+##   1                  100      0.9702975  0.9955184  0.145675903
+##   1                  150      0.9705528  0.9846747  0.497481108
+##   2                   50      0.9704918  0.9842986  0.505877414
+##   2                  100      0.9712187  0.9824182  0.555835432
+##   2                  150      0.9711431  0.9823555  0.558354324
+##   3                   50      0.9708925  0.9826689  0.557094878
+##   3                  100      0.9711643  0.9821675  0.557934509
+##   3                  150      0.9713693  0.9819794  0.561293031
+## 
+## Tuning parameter &amp;#39;shrinkage&amp;#39; was held constant at a value of 0.1
+## 
+## Tuning parameter &amp;#39;n.minobsinnode&amp;#39; was held constant at a value of 10
+## ROC was used to select the optimal model using  the largest value.
+## The final values used for the model were n.trees = 150,
+##  interaction.depth = 3, shrinkage = 0.1 and n.minobsinnode = 10.&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;evaluate-model&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Evaluate Model&lt;/h1&gt;
+&lt;p&gt;In order to check how good our model is performing, we’ll use it to predict it on our &lt;code&gt;testDF&lt;/code&gt; of which we already know the values of the target variable.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predictions &amp;lt;- predict(object = objModel,testDF[,predictorVariables],type = &amp;quot;raw&amp;quot;)
+head(predictions)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] nope nope nope nope nope nope
+## Levels: nope yes&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now lets get our accuracy score. &lt;code&gt;postResample&lt;/code&gt; function in the &lt;code&gt;caret&lt;/code&gt; library provides us with an easy way to compare results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;print(postResample(pred=predictions, obs=as.factor(testDF[,outcomeVariable])))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  Accuracy     Kappa 
+## 0.9524851 0.5923798&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That’s an accuracy of above 95%.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;predicting-output&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Predicting Output&lt;/h1&gt;
+&lt;p&gt;We’ll now import the test files&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;test_Y &amp;lt;- read.csv(&amp;quot;~/Desktop/ME/MyWebsites/Blog2/data/Criminal/Data/criminal_test.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;lets start predicting the output.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;predictions_output &amp;lt;- predict(object = objModel,test_Y[,predictorVariables],type = &amp;quot;raw&amp;quot;)
+predictions_output &amp;lt;- as.data.frame(predictions_output)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;creating-final-dataframe-for-submission&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Creating final dataframe for submission&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Submission &amp;lt;- bind_cols(PERID=test_Y$PERID,Criminal=predictions_output)
+colnames(Submission) &amp;lt;- c(&amp;quot;PERID&amp;quot;,&amp;quot;Criminal&amp;quot;)
+Submission$Criminal &amp;lt;- ifelse(Submission$Criminal==&amp;quot;nope&amp;quot;,0,1)
+
+write.csv(Submission,&amp;quot;Submission.csv&amp;quot;,row.names = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 </description>
     </item>
     
