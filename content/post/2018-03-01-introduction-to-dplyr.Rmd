@@ -1,0 +1,94 @@
+---
+title: Introduction to dplyr
+author: Gaurav Satav
+date: '2018-03-01'
+slug: introduction-to-dplyr
+categories: []
+tags:
+  - notes
+  - learning
+---
+
+This is a short introduction to the r package `dplyr`. The datasets we'll be using for the purposes of this tutorial will are the ones present within the `datasets` library of R.
+
+Lets first start by importing the required libraries.
+```{r,echo=FALSE}
+library(knitr)
+library(kableExtra)
+```
+
+
+```{r Importing Libraries,message=FALSE}
+library(datasets)
+library(dplyr)
+```
+
+The best way to appreciate `dplyr` is to first get a feel of why is it required in the first place. In order to do that, lets say, given the data below, 
+
+```{r,echo=FALSE}
+head(mtcars)
+```
+we'd like to perform following actions on the dataframe.
+
+1. Create a new dataframe which consist of only carnames,mpg and cyl
+
+2. Create a new dataframe which consist only of cyl value = 4
+
+and would like to obtain answers to the following questions.
+
+1. 
+
+
+The most common set of actions which we'll be performing would be
+
+* Select particular Variables (Columns)
+
+* Selecting particular Observations (Rows)
+
+* Grouping Observations.
+
+* Summarize variables
+
+* Creating new dataframes.
+
+
+
+## Grouping
+
+
+## Summarizing 
+
+*dplr* offers us with the following list of summarising functions:
+
+* summarise()
+
+* summarise_all()
+
+* summarise_each()
+
+* summarise_at()
+
+* summarise_if()
+
+Hmm, now what's the purpose of each of these similar looking functions? Well we can start of by getting an idea of what the output of a summarise function is.
+
+
+Now suppose we would like to know, what is the mean (this is our function) **mpg** value of all the 4,6 and 8 cylinder (cyl is our variable) cars. Using the summarise function the code to generate output would look as follows
+
+```{r}
+mtcars %>% group_by(Cylinders = cyl) %>% summarise("MEAN MPG"= mean(mpg))
+```
+
+as can be seen from the output above, the mean **mpg** value for a 4 cyl vehicle is 26.7
+
+Suppose along with finding the mean, we'd like to find the min value of for each cyl value. In this case we have to summarise our data based on 2 functions, **mean** and **min**. Our variable remains the same (mpg). The code would look as follows
+
+```{r,}
+mtcars %>% group_by(Cylinders = cyl) %>% summarise_at(vars(mpg,disp),.funs = c(mean,min))
+```
+
+**How many variables do I need to summarise?** 
+
+**How many different functions do I need the columns to be summarised by?**
+
+

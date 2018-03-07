@@ -1,0 +1,77 @@
+---
+title: Introduction to dplyr
+author: Gaurav Satav
+date: '2018-03-01'
+slug: introduction-to-dplyr
+categories: []
+tags:
+  - notes
+  - learning
+---
+
+
+
+<p>This is a short introduction to the r package <code>dplyr</code>. The datasets we’ll be using for the purposes of this tutorial will are the ones present within the <code>datasets</code> library of R.</p>
+<p>Lets first start by importing the required libraries.</p>
+<pre class="r"><code>library(datasets)
+library(dplyr)</code></pre>
+<p>The best way to appreciate <code>dplyr</code> is to first get a feel of why is it required in the first place. In order to do that, lets say, given the data below,</p>
+<pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+<p>we’d like to perform following actions on the dataframe.</p>
+<ol style="list-style-type: decimal">
+<li><p>Create a new dataframe which consist of only carnames,mpg and cyl</p></li>
+<li><p>Create a new dataframe which consist only of cyl value = 4</p></li>
+</ol>
+<p>and would like to obtain answers to the following questions.</p>
+<ol style="list-style-type: decimal">
+<li></li>
+</ol>
+<p>The most common set of actions which we’ll be performing would be</p>
+<ul>
+<li><p>Select particular Variables (Columns)</p></li>
+<li><p>Selecting particular Observations (Rows)</p></li>
+<li><p>Grouping Observations.</p></li>
+<li><p>Summarize variables</p></li>
+<li><p>Creating new dataframes.</p></li>
+</ul>
+<div id="grouping" class="section level2">
+<h2>Grouping</h2>
+</div>
+<div id="summarizing" class="section level2">
+<h2>Summarizing</h2>
+<p><em>dplr</em> offers us with the following list of summarising functions:</p>
+<ul>
+<li><p>summarise()</p></li>
+<li><p>summarise_all()</p></li>
+<li><p>summarise_each()</p></li>
+<li><p>summarise_at()</p></li>
+<li><p>summarise_if()</p></li>
+</ul>
+<p>Hmm, now what’s the purpose of each of these similar looking functions? Well we can start of by getting an idea of what the output of a summarise function is.</p>
+<p>Now suppose we would like to know, what is the mean (this is our function) <strong>mpg</strong> value of all the 4,6 and 8 cylinder (cyl is our variable) cars. Using the summarise function the code to generate output would look as follows</p>
+<pre class="r"><code>mtcars %&gt;% group_by(Cylinders = cyl) %&gt;% summarise(&quot;MEAN MPG&quot;= mean(mpg))</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   Cylinders `MEAN MPG`
+##       &lt;dbl&gt;      &lt;dbl&gt;
+## 1        4.       26.7
+## 2        6.       19.7
+## 3        8.       15.1</code></pre>
+<p>as can be seen from the output above, the mean <strong>mpg</strong> value for a 4 cyl vehicle is 26.7</p>
+<p>Suppose along with finding the mean, we’d like to find the min value of for each cyl value. In this case we have to summarise our data based on 2 functions, <strong>mean</strong> and <strong>min</strong>. Our variable remains the same (mpg). The code would look as follows</p>
+<pre class="r"><code>mtcars %&gt;% group_by(Cylinders = cyl) %&gt;% summarise_at(vars(mpg,disp),.funs = c(mean,min))</code></pre>
+<pre><code>## # A tibble: 3 x 5
+##   Cylinders `mpg_function (x, ..… `disp_function (x, .… `mpg_.Primitive(&quot;…
+##       &lt;dbl&gt;                 &lt;dbl&gt;                 &lt;dbl&gt;              &lt;dbl&gt;
+## 1        4.                  26.7                  105.               21.4
+## 2        6.                  19.7                  183.               17.8
+## 3        8.                  15.1                  353.               10.4
+## # ... with 1 more variable: `disp_.Primitive(&quot;min&quot;)` &lt;dbl&gt;</code></pre>
+<p><strong>How many variables do I need to summarise?</strong></p>
+<p><strong>How many different functions do I need the columns to be summarised by?</strong></p>
+</div>
