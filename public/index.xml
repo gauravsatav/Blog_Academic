@@ -11,6 +11,16 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Comparing dplyr with pandas</title>
+      <link>/post/comparing-dplyr-with-pandas/</link>
+      <pubDate>Wed, 07 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/comparing-dplyr-with-pandas/</guid>
+      <description>&lt;p&gt;This post is making comparisions between&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Introduction to dplyr</title>
       <link>/post/introduction-to-dplyr/</link>
       <pubDate>Thu, 01 Mar 2018 00:00:00 +0000</pubDate>
